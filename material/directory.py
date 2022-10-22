@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import os
-import subprocess
 import shutil
 from typing import Any, Callable, List
 
@@ -14,7 +13,9 @@ class Condition:
     def __init__(self) -> None:
         self.only_terminal_file = False
         self.contain_literal = []
+        self.exclude_literal = []
         self.contain_dirc = []
+        self.exclude_dirc = []
         self.extention = []
         self.condition_func = []
 
@@ -23,23 +24,34 @@ class Condition:
             if not terminal:
                 return False
 
-        if not self.contain_dirc == []:
+        if self.contain_dirc != []:
             dircs = os.path.dirname(file_path).split("\\")
             for target_dirc in self.contain_dirc:
                 if not target_dirc in dircs:
                     return False
 
-        if not self.extention == []:
+        if self.exclude_dirc != []:
+            dircs = os.path.dirname(file_path).split("\\")
+            for target_dirc in self.exclude_dirc:
+                if target_dirc in dircs:
+                    return False
+
+        if self.extention != []:
             ext = file_path.split(".")[-1]
             if not ext in self.extention:
                 return False
 
-        if not self.contain_literal == []:
+        if self.contain_literal != []:
             for literal in self.contain_literal:
                 if not literal in file_path:
                     return False
 
-        if not self.condition_func == []:
+        if self.exclude_literal != []:
+            for literal in self.exclude_literal:
+                if literal in file_path:
+                    return False
+
+        if self.condition_func != []:
             for condition in self.condition_func:
                 if not condition(file_path):
                     return False
@@ -50,11 +62,15 @@ class Condition:
         """set condition, get file path only terminal files"""
         self.only_terminal_file = set_status
 
-    def add_contains_filename(self, literal: str):
+    def add_contain_filename(self, literal: str):
         """set condition, get file path which include literal"""
         self.contain_literal.append(literal)
 
-    def remove_contains_filename(self, literal: List[str]):
+    def add_exclude_filename(self, literal: str):
+        """set condition, get file path which exclude literal"""
+        self.exclude_literal.append(literal)
+
+    def remove_contain_filename(self, literal: List[str]):
         """remove literal in registered literals"""
         new_list = []
         for c_l in self.contain_literal:
@@ -63,11 +79,24 @@ class Condition:
             new_list.append(c_l)
         self.contain_literal = new_list
 
-    def add_contains_dirc(self, dirc_name: str):
-        """set condition, get file path which include directory-name"""
+    def remove_exclude_filename(self, literal: List[str]):
+        """remove literal in registered literals for excluding"""
+        new_list = []
+        for c_l in self.exclude_literal:
+            if c_l in literal:
+                continue
+            new_list.append(c_l)
+        self.exclude_literal = new_list
+
+    def add_contain_dirc(self, dirc_name: str):
+        """set condition, get file path which include 'dirc_name'"""
         self.contain_dirc.append(dirc_name)
 
-    def remove_contains_dirc(self, dirc_name: List[str]):
+    def add_exclude_dirc(self, dirc_name: str):
+        """set condition, get file path which exclude 'dirc_name'"""
+        self.exclude_dirc.append(dirc_name)
+
+    def remove_contain_dirc(self, dirc_name: List[str]):
         """remove directory-name in registered literals"""
         new_list = []
         for c_l in self.contain_dirc:
@@ -75,6 +104,15 @@ class Condition:
                 continue
             new_list.append(c_l)
         self.contain_dirc = new_list
+
+    def remove_exclude_dirc(self, dirc_name: List[str]):
+        """remove excluded directory-name in registered literals"""
+        new_list = []
+        for c_l in self.exclude_dirc:
+            if c_l in dirc_name:
+                continue
+            new_list.append(c_l)
+        self.exclude_dirc = new_list
 
     def specify_extention(self, extention: str):
         """Specify the file extension."""
@@ -95,6 +133,10 @@ class Condition:
         must have argment 'path'(str) & must return 'result'(bool).
         """
         self.condition_func.append(condition)
+
+    def reset_condition_func(self):
+        """reset original conditions"""
+        self.condition_func = []
 
 
 class Directory:

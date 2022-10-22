@@ -304,14 +304,3 @@ class Directory:
             if condition(file, self.terminal):
                 shutil.copyfile(file_path, target_path)
                 printer(f"copy: {file_path} -> {target_path}")
-                # com = f"cp {file_path} {path}".split(" ")
-                # try:
-                #     subprocess.run(com, check=True)
-                # except subprocess.CalledProcessError:
-                #     if printer is not None:
-                #         printer(
-                #             f"command: '{' '.join(com)}' is faild! -> called process error"
-                #         )
-                # else:
-                #     if printer is not None:
-                #         printer(f"command: '{' '.join(com)}' is success!")

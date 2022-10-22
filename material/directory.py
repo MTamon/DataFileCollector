@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import os
-from typing import List
+import subprocess
+import shutil
+from typing import Any, Callable, List
 
 
 class Condition:
@@ -14,6 +16,7 @@ class Condition:
         self.contain_literal = []
         self.contain_dirc = []
         self.extention = []
+        self.condition_func = []
 
     def __call__(self, file_path: str, terminal: bool) -> bool:
         if self.only_terminal_file:
@@ -34,6 +37,11 @@ class Condition:
         if not self.contain_literal == []:
             for literal in self.contain_literal:
                 if not literal in file_path:
+                    return False
+
+        if not self.condition_func == []:
+            for condition in self.condition_func:
+                if not condition(file_path):
                     return False
 
         return True
@@ -80,6 +88,13 @@ class Condition:
                 continue
             new_list.append(c_l)
         self.extention = new_list
+
+    def add_condition_func(self, condition: Callable[[str], bool]):
+        """
+        add original condition. 'condition' must be Callable &
+        must have argment 'path'(str) & must return 'result'(bool).
+        """
+        self.condition_func.append(condition)
 
 
 class Directory:
@@ -148,9 +163,16 @@ class Directory:
 
         return clone
 
-    def incarnate(self, path: str) -> int:
+    def incarnate(
+        self,
+        path: str,
+        condition: Condition = None,
+        printer: Callable[[str], Any] = None,
+    ) -> int:
         """
-        Incarnating instance as an actual directory
+        Incarnating instance as an actual directory.
+
+        If a Condition is specified, the corresponding file will also be copied.
 
         Returns
         -------
@@ -165,9 +187,11 @@ class Directory:
         if not os.path.isdir(mk_path):
             os.mkdir(mk_path)
             mk_number += 1
+        if condition is not None:
+            self.copy_file(mk_path, condition, printer)
 
         for dirc in self.dirc_member:
-            mk_number += dirc.incarnate(mk_path)
+            mk_number += dirc.incarnate(mk_path, condition, printer)
 
         return mk_number
 
@@ -219,3 +243,33 @@ class Directory:
             del dirc_obj
 
         return
+
+    def copy_file(
+        self,
+        path: str,
+        condition: Condition = None,
+        printer: Callable[[str], Any] = None,
+    ):
+        """copy member files to path (option: with conditon)"""
+
+        path = "/".join(path.split("\\"))
+
+        for file in self.file_member:
+            file_path = "/".join(file.split("\\"))
+            file_name = os.path.basename(file_path)
+            target_path = "/".join([path, file_name])
+
+            if condition(file, self.terminal):
+                shutil.copyfile(file_path, target_path)
+                printer(f"copy: {file_path} -> {target_path}")
+                # com = f"cp {file_path} {path}".split(" ")
+                # try:
+                #     subprocess.run(com, check=True)
+                # except subprocess.CalledProcessError:
+                #     if printer is not None:
+                #         printer(
+                #             f"command: '{' '.join(com)}' is faild! -> called process error"
+                #         )
+                # else:
+                #     if printer is not None:
+                #         printer(f"command: '{' '.join(com)}' is success!")

@@ -88,7 +88,6 @@ if __name__ == "__main__":
     collector.database = structures
     print(collector)
 
-    print("incarnated:", cloned.incarnate("./out/out"))
+    print("incarnated:", cloned.incarnate("./out/out", cond, print))
 
     cloned.destruct()
-    print(dir(cloned))

@@ -1,5 +1,7 @@
 """Directory instance for database collector"""
 
+from __future__ import annotations
+
 import os
 from typing import List
 
@@ -83,32 +85,34 @@ class Condition:
 class Directory:
     """This class is used to represent a directory in a database collector."""
 
-    def __init__(self, name: str, path: str) -> None:
+    def __init__(self, path: str, empty: bool = False) -> None:
+        path = "\\".join(path.split("/"))
+        name = path.split("\\")[-1]
+        if path == ".\\":
+            name = os.path.abspath(path).split("\\")[-1]
+            path = os.path.join("..", name)
 
         self.name = name
         self.path = path
-        self.own_path = os.path.join(path, name)
 
-        list_member = os.listdir(self.own_path)
-        dirc_member = []
-        file_member = []
-        for member in list_member:
-            if os.path.isfile(os.path.join(self.own_path, member)):
-                file_member.append(os.path.join(self.own_path, member))
-            else:
-                dirc_member.append(os.path.join(self.own_path, member))
+        self.empty = empty
 
-        self.dirc_member = [
-            Directory(dirc_name, self.own_path) for dirc_name in dirc_member
-        ]
-        self.file_member = file_member
+        self.file_member = []
+        self.dirc_member = []
+        self.terminal = True
 
-        self.terminal = len(dirc_member) == 0
+    def build_structure(self):
+        """Generate & build directory structure"""
+
+        self.update_member(self.empty)
+
+        return self
 
     def get_file_path(self, condition: Condition) -> list:
         """Get the path to the file matching the condition.
 
         Args:
+        -----
             condition (Condition): The conditions of the file to be acquired are described.
         """
         file_list = []
@@ -121,3 +125,97 @@ class Directory:
             file_list.append(dirc.get_file_path(condition))
 
         return file_list
+
+    def clone(self, condition: Condition = None) -> Directory:
+        """copy Directory structure (option: with condition)"""
+
+        clone = Directory(self.path, self.empty)
+
+        clone.file_member = self.file_member.copy()
+        clone.dirc_member = [
+            directory.clone(condition) for directory in self.dirc_member
+        ]
+        clone.terminal = self.terminal
+
+        if condition is None:
+            return clone
+
+        new_list = []
+        for file in clone.file_member:
+            if condition(file, clone.terminal):
+                new_list.append(file)
+        clone.file_member = new_list
+
+        return clone
+
+    def incarnate(self, path: str) -> int:
+        """
+        Incarnating instance as an actual directory
+
+        Returns
+        -------
+        (int): number of made directory
+        """
+
+        path = "\\".join(path.split("/"))
+
+        mk_number = 0
+
+        mk_path = os.path.join(path, self.name)
+        if not os.path.isdir(mk_path):
+            os.mkdir(mk_path)
+            mk_number += 1
+
+        for dirc in self.dirc_member:
+            mk_number += dirc.incarnate(mk_path)
+
+        return mk_number
+
+    def hollow(self) -> Directory:
+        """clone instance & remove its file member"""
+
+        target = self.clone()
+        target.file_member = []
+        for children in target.dirc_member:
+            children.hollow()
+
+        return target
+
+    def update_member(self, empty: bool = False):
+        """update directory member"""
+
+        list_member = os.listdir(self.path)
+        dirc_member = []
+        file_member = []
+        for member in list_member:
+            if os.path.isfile(os.path.join(self.path, member)):
+                file_member.append(os.path.join(self.path, member))
+            else:
+                dirc_member.append(member)
+
+        self.destruct()
+
+        self.dirc_member = [
+            Directory(os.path.join(self.path, dirc_name), empty)
+            for dirc_name in dirc_member
+        ]
+        self.file_member = file_member
+
+        self.terminal = len(dirc_member) == 0
+        for dirc in self.dirc_member:
+            dirc.update_member(empty)
+
+        if empty:
+            self.file_member = []
+
+    def destruct(self) -> None:
+        """Destruct members"""
+
+        if self.terminal:
+            return
+
+        for dirc_obj in self.dirc_member:
+            dirc_obj.destruct()
+            del dirc_obj
+
+        return

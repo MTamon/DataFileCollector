@@ -10,6 +10,7 @@ class Condition:
     def __init__(self) -> None:
         self.only_terminal_file = False
         self.contain_literal = []
+        self.contain_dirc = []
         self.extention = []
 
     def __call__(self, file_path: str, terminal: bool) -> bool:
@@ -17,13 +18,21 @@ class Condition:
             if not terminal:
                 return False
 
-        ext = file_path.split(".")[-1]
-        if not ext in self.extention:
-            return False
+        if not self.contain_dirc == []:
+            dircs = os.path.dirname(file_path).split("\\")
+            for target_dirc in self.contain_dirc:
+                if not target_dirc in dircs:
+                    return False
 
-        for literal in self.contain_literal:
-            if not literal in file_path:
+        if not self.extention == []:
+            ext = file_path.split(".")[-1]
+            if not ext in self.extention:
                 return False
+
+        if not self.contain_literal == []:
+            for literal in self.contain_literal:
+                if not literal in file_path:
+                    return False
 
         return True
 
@@ -31,11 +40,11 @@ class Condition:
         """set condition, get file path only terminal files"""
         self.only_terminal_file = set_status
 
-    def add_contains(self, literal: str):
+    def add_contains_filename(self, literal: str):
         """set condition, get file path which include literal"""
         self.contain_literal.append(literal)
 
-    def remove_contains(self, literal: List[str]):
+    def remove_contains_filename(self, literal: List[str]):
         """remove literal in registered literals"""
         new_list = []
         for c_l in self.contain_literal:
@@ -43,6 +52,19 @@ class Condition:
                 continue
             new_list.append(c_l)
         self.contain_literal = new_list
+
+    def add_contains_dirc(self, dirc_name: str):
+        """set condition, get file path which include directory-name"""
+        self.contain_dirc.append(dirc_name)
+
+    def remove_contains_dirc(self, dirc_name: List[str]):
+        """remove directory-name in registered literals"""
+        new_list = []
+        for c_l in self.contain_dirc:
+            if c_l in dirc_name:
+                continue
+            new_list.append(c_l)
+        self.contain_dirc = new_list
 
     def specify_extention(self, extention: str):
         """Specify the file extension."""

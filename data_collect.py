@@ -2,8 +2,6 @@
 
 import os
 
-from attr import attr
-
 from material.directory import Condition, Directory
 
 

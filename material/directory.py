@@ -43,12 +43,12 @@ class Condition:
 
         if self.contain_literal != []:
             for literal in self.contain_literal:
-                if not literal in file_path:
+                if not literal in os.path.basename(file_path):
                     return False
 
         if self.exclude_literal != []:
             for literal in self.exclude_literal:
-                if literal in file_path:
+                if literal in os.path.basename(file_path):
                     return False
 
         if self.condition_func != []:
@@ -208,7 +208,8 @@ class Directory:
 
         for file in self.file_member:
             if condition(file, self.terminal):
-                file_list.append(file)
+                out_form_path = "/".join(file.split(os.sep))
+                file_list.append(out_form_path)
 
         for dirc in self.dirc_member:
             file_list.append(dirc.get_file_path(condition))

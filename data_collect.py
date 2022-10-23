@@ -23,7 +23,8 @@ class Collector:
 
         return self.database.get_file_path(self.condition)
 
-    def serialize_path_list(self, file_path_struct: list):
+    @staticmethod
+    def serialize_path_list(file_path_struct: list):
         """Serialize get_path() return value."""
 
         def flatten(list_struct: list):
@@ -39,6 +40,28 @@ class Collector:
         serialized_list = flatten(file_path_struct)
 
         return serialized_list
+
+    @staticmethod
+    def group_dir_file(file_path_struct: list):
+        """Grouping get_path() return value with same directory site."""
+
+        def grouping(list_struct: list):
+            group_list = []
+            files = []
+            for element in list_struct:
+                if isinstance(element, (list, tuple)):
+                    group_list += grouping(element)
+                else:
+                    files.append(element)
+
+            if files != []:
+                group_list = [files, *group_list]
+
+            return group_list
+
+        grouped_list = grouping(file_path_struct)
+
+        return grouped_list
 
     def get_directory_instance(self) -> Directory:
         """Return Directory instance which useed this Collector"""
@@ -61,10 +84,15 @@ if __name__ == "__main__":
 
     collector = Collector(cond, "./")
     results = collector.get_path()
-    results = collector.serialize_path_list(results)
+    serialized_results = Collector.serialize_path_list(results)
+    grouped_results = Collector.group_dir_file(results)
 
-    for r in results:
+    for r in serialized_results:
         print(f"collect path: {r}")
+    print()
+
+    for r in grouped_results:
+        print(f"group: {r}")
     print()
 
     # example2

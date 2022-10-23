@@ -25,13 +25,13 @@ class Condition:
                 return False
 
         if self.contain_dirc != []:
-            dircs = os.path.dirname(file_path).split("\\")
+            dircs = os.path.dirname(file_path).split(os.sep)
             for target_dirc in self.contain_dirc:
                 if not target_dirc in dircs:
                     return False
 
         if self.exclude_dirc != []:
-            dircs = os.path.dirname(file_path).split("\\")
+            dircs = os.path.dirname(file_path).split(os.sep)
             for target_dirc in self.exclude_dirc:
                 if target_dirc in dircs:
                     return False
@@ -143,10 +143,15 @@ class Directory:
     """This class is used to represent a directory in a database collector."""
 
     def __init__(self, path: str, empty: bool = False) -> None:
-        path = "\\".join(path.split("/"))
-        name = path.split("\\")[-1]
-        if path == ".\\":
-            name = os.path.abspath(path).split("\\")[-1]
+        if path == "":
+            raise ValueError(
+                "'path' must not be empty. If you wont to set current directory, set './'."
+            )
+
+        path = os.sep.join(path.split("/"))
+        name = path.split(os.sep)[-1]
+        if path == f".{os.sep}":
+            name = os.path.abspath(path).split(os.sep)[-1]
             path = os.path.join("..", name)
 
         self.name = name
@@ -186,7 +191,7 @@ class Directory:
 
     def get_abspath(self) -> str:
         """get abstract path which is sep by '/'"""
-        return "/".join(self.abspath.split("\\"))
+        return "/".join(self.abspath.split(os.sep))
 
     def clone(self, condition: Condition = None) -> Directory:
         """copy Directory structure (option: with condition)"""
@@ -226,7 +231,7 @@ class Directory:
         (int): number of made directory
         """
 
-        path = "\\".join(path.split("/"))
+        path = os.sep.join(path.split("/"))
 
         mk_number = 0
 
@@ -299,10 +304,10 @@ class Directory:
     ):
         """copy member files to path (option: with conditon)"""
 
-        path = "/".join(path.split("\\"))
+        path = os.sep.join(path.split("/"))
 
         for file in self.file_member:
-            file_path = "/".join(file.split("\\"))
+            file_path = "/".join(file.split(os.sep))
             file_name = os.path.basename(file_path)
             target_path = "/".join([path, file_name])
 

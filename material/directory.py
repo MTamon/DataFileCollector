@@ -58,19 +58,25 @@ class Condition:
 
         return True
 
-    def only_terminal(self, set_status: bool = True):
+    def only_terminal(self, set_status: bool = True) -> Condition:
         """set condition, get file path only terminal files"""
         self.only_terminal_file = set_status
 
-    def add_contain_filename(self, literal: str):
+        return self
+
+    def add_contain_filename(self, literal: str) -> Condition:
         """set condition, get file path which include literal"""
         self.contain_literal.append(literal)
 
-    def add_exclude_filename(self, literal: str):
+        return self
+
+    def add_exclude_filename(self, literal: str) -> Condition:
         """set condition, get file path which exclude literal"""
         self.exclude_literal.append(literal)
 
-    def remove_contain_filename(self, literal: List[str]):
+        return self
+
+    def remove_contain_filename(self, literal: List[str]) -> Condition:
         """remove literal in registered literals"""
         new_list = []
         for c_l in self.contain_literal:
@@ -79,7 +85,9 @@ class Condition:
             new_list.append(c_l)
         self.contain_literal = new_list
 
-    def remove_exclude_filename(self, literal: List[str]):
+        return self
+
+    def remove_exclude_filename(self, literal: List[str]) -> Condition:
         """remove literal in registered literals for excluding"""
         new_list = []
         for c_l in self.exclude_literal:
@@ -88,15 +96,21 @@ class Condition:
             new_list.append(c_l)
         self.exclude_literal = new_list
 
-    def add_contain_dirc(self, dirc_name: str):
+        return self
+
+    def add_contain_dirc(self, dirc_name: str) -> Condition:
         """set condition, get file path which include 'dirc_name'"""
         self.contain_dirc.append(dirc_name)
 
-    def add_exclude_dirc(self, dirc_name: str):
+        return self
+
+    def add_exclude_dirc(self, dirc_name: str) -> Condition:
         """set condition, get file path which exclude 'dirc_name'"""
         self.exclude_dirc.append(dirc_name)
 
-    def remove_contain_dirc(self, dirc_name: List[str]):
+        return self
+
+    def remove_contain_dirc(self, dirc_name: List[str]) -> Condition:
         """remove directory-name in registered literals"""
         new_list = []
         for c_l in self.contain_dirc:
@@ -105,7 +119,9 @@ class Condition:
             new_list.append(c_l)
         self.contain_dirc = new_list
 
-    def remove_exclude_dirc(self, dirc_name: List[str]):
+        return self
+
+    def remove_exclude_dirc(self, dirc_name: List[str]) -> Condition:
         """remove excluded directory-name in registered literals"""
         new_list = []
         for c_l in self.exclude_dirc:
@@ -114,11 +130,15 @@ class Condition:
             new_list.append(c_l)
         self.exclude_dirc = new_list
 
-    def specify_extention(self, extention: str):
+        return self
+
+    def specify_extention(self, extention: str) -> Condition:
         """Specify the file extension."""
         self.extention.append(extention)
 
-    def remove_extentions(self, extentions: List[str]):
+        return self
+
+    def remove_extentions(self, extentions: List[str]) -> Condition:
         """remove extentions in registered extentions"""
         new_list = []
         for c_l in self.extention:
@@ -127,16 +147,22 @@ class Condition:
             new_list.append(c_l)
         self.extention = new_list
 
-    def add_condition_func(self, condition: Callable[[str], bool]):
+        return self
+
+    def add_condition_func(self, condition: Callable[[str], bool]) -> Condition:
         """
         add original condition. 'condition' must be Callable &
         must have argment 'path'(str) & must return 'result'(bool).
         """
         self.condition_func.append(condition)
 
-    def reset_condition_func(self):
+        return self
+
+    def reset_condition_func(self) -> Condition:
         """reset original conditions"""
         self.condition_func = []
+
+        return self
 
 
 class Directory:

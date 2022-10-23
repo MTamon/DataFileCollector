@@ -151,6 +151,7 @@ class Directory:
 
         self.name = name
         self.path = path
+        self.abspath = os.path.abspath(path)
 
         self.empty = empty
 

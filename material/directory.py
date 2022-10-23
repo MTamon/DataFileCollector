@@ -190,7 +190,7 @@ class Directory:
         return file_list
 
     def get_abspath(self) -> str:
-        """get abstract path which is sep by '/'"""
+        """get absolute path which is sep by '/'"""
         return "/".join(self.abspath.split(os.sep))
 
     def clone(self, condition: Condition = None) -> Directory:

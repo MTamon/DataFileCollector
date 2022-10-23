@@ -184,6 +184,10 @@ class Directory:
 
         return file_list
 
+    def get_abspath(self) -> str:
+        """get abstract path which is sep by '/'"""
+        return "/".join(self.abspath.split("\\"))
+
     def clone(self, condition: Condition = None) -> Directory:
         """copy Directory structure (option: with condition)"""
 

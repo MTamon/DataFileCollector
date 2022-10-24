@@ -64,15 +64,15 @@ class Condition:
 
         return self
 
-    def add_contain_filename(self, literal: str) -> Condition:
+    def add_contain_filename(self, literal: List[str]) -> Condition:
         """set condition, get file path which include literal"""
-        self.contain_literal.append(literal)
+        self.contain_literal += literal
 
         return self
 
-    def add_exclude_filename(self, literal: str) -> Condition:
+    def add_exclude_filename(self, literal: List[str]) -> Condition:
         """set condition, get file path which exclude literal"""
-        self.exclude_literal.append(literal)
+        self.exclude_literal += literal
 
         return self
 
@@ -98,15 +98,15 @@ class Condition:
 
         return self
 
-    def add_contain_dirc(self, dirc_name: str) -> Condition:
+    def add_contain_dirc(self, dirc_name: List[str]) -> Condition:
         """set condition, get file path which include 'dirc_name'"""
-        self.contain_dirc.append(dirc_name)
+        self.contain_dirc += dirc_name
 
         return self
 
-    def add_exclude_dirc(self, dirc_name: str) -> Condition:
+    def add_exclude_dirc(self, dirc_name: List[str]) -> Condition:
         """set condition, get file path which exclude 'dirc_name'"""
-        self.exclude_dirc.append(dirc_name)
+        self.exclude_dirc += dirc_name
 
         return self
 
@@ -132,9 +132,9 @@ class Condition:
 
         return self
 
-    def specify_extention(self, extention: str) -> Condition:
+    def specify_extention(self, extention: List[str]) -> Condition:
         """Specify the file extension."""
-        self.extention.append(extention)
+        self.extention += extention
 
         return self
 

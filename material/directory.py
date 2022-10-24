@@ -328,6 +328,7 @@ class Directory:
         path: str,
         condition: Condition = None,
         printer: Callable[[str], Any] = None,
+        override: bool = False,
     ):
         """copy member files to path (option: with conditon)"""
 
@@ -339,5 +340,6 @@ class Directory:
             target_path = "/".join([path, file_name])
 
             if condition(file, self.terminal):
-                shutil.copyfile(file_path, target_path)
+                if not os.path.isfile(target_path) or override:
+                    shutil.copyfile(file_path, target_path)
                 printer(f"copy: {file_path} -> {target_path}")

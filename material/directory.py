@@ -134,7 +134,7 @@ class Condition:
 
     def specify_extention(self, extention: List[str]) -> Condition:
         """Specify the file extension."""
-        self.extention += extention
+        self.extention += [extention]
 
         return self
 

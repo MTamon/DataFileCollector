@@ -1,6 +1,7 @@
 """Database file path collector"""
 
 import os
+from typing import List
 
 from material.directory import Condition, Directory
 
@@ -15,13 +16,13 @@ class Collector:
         self.database = Directory(root_path).build_structure()
         self.condition = condition
 
-    def get_path(self) -> list:
+    def get_path(self, serialize: bool = False) -> list:
         """
         Get the path to the file matching the condition &
         The directory structure is returned intact.
         """
 
-        return self.database.get_file_path(self.condition)
+        return self.database.get_file_path(self.condition, serialize=serialize)
 
     @staticmethod
     def serialize_path_list(file_path_struct: list):
@@ -64,8 +65,16 @@ class Collector:
         return grouped_list
 
     def get_directory_instance(self) -> Directory:
-        """Return Directory instance which useed this Collector"""
+        """Return Directory instance which used this Collector"""
         return self.database
+
+    def get_terminal_dirs(self, serialize: bool = False) -> list:
+        """Return terminal Directory instances which contains Directory instance useed this Collector"""
+        return self.database.get_terminal_instances(serialize=serialize)
+
+    def get_all_dirs(self, serialize: bool = False) -> list:
+        """Return all Directory instance which contains Directory instance useed this Collector"""
+        return self.database.get_all_instances(serialize=serialize, terminal_only=False)
 
     def __str__(self):
         out_str = ""
@@ -85,8 +94,19 @@ if __name__ == "__main__":
 
     collector = Collector(cond, "./")
     results = collector.get_path()
-    serialized_results = Collector.serialize_path_list(results)
+    # serialized_results = Collector.serialize_path_list(results)
+    serialized_results = collector.get_path(serialize=True)
     grouped_results = Collector.group_dir_file(results)
+    all_dir_instances = collector.get_all_dirs(serialize=True)
+    terminal_dirs = collector.get_terminal_dirs(serialize=True)
+
+    for r in all_dir_instances:
+        print(f"collect dirs: {r}")
+    print()
+
+    for r in terminal_dirs:
+        print(f"collect term: {r}")
+    print()
 
     for r in serialized_results:
         print(f"collect path: {r}")

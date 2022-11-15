@@ -190,6 +190,9 @@ class Directory:
         self.dirc_member = []
         self.terminal = True
 
+    def __str__(self) -> str:
+        return self.path
+
     def build_structure(self):
         """Generate & build directory structure"""
 
@@ -197,12 +200,13 @@ class Directory:
 
         return self
 
-    def get_file_path(self, condition: Condition) -> list:
+    def get_file_path(self, condition: Condition, serialize: bool = False) -> list:
         """Get the path to the file matching the condition.
 
         Args:
         -----
             condition (Condition): The conditions of the file to be acquired are described.
+            serialize (bool): Specifies how the directory list is returned.
         """
         file_list = []
 
@@ -212,9 +216,61 @@ class Directory:
                 file_list.append(out_form_path)
 
         for dirc in self.dirc_member:
-            file_list.append(dirc.get_file_path(condition))
+            if serialize:
+                file_list += dirc.get_file_path(condition, serialize=serialize)
+            else:
+                file_list.append(dirc.get_file_path(condition, serialize=serialize))
 
         return file_list
+
+    def get_terminal_instances(self, serialize: bool = False) -> list:
+        """Get the terminal Directory instance list while preserving file structure
+        or Get the terminal Directory instance serialized list.
+
+        Args:
+        -----
+            serialize (bool): Specifies how the directory list is returned.
+        """
+        return self.get_all_instances(serialize=serialize, terminal_only=True)
+        # dir_list = []
+
+        # if self.terminal:
+        #     return [self]
+
+        # for dirc in self.dirc_member:
+        #     dir_list += dirc.get_terminal_instances(serialize=serialize)
+
+        # if serialize:
+        #     return dir_list
+        # else:
+        #     return [dir_list]
+
+    def get_all_instances(
+        self, serialize: bool = False, terminal_only: bool = False
+    ) -> list:
+        """Get the Directory instance list while preserving file structure
+        or Get Directory instance serialized list.
+        """
+        dir_list = []
+
+        if self.terminal:
+            return [self]
+
+        for dirc in self.dirc_member:
+            dir_list += dirc.get_all_instances(
+                serialize=serialize, terminal_only=terminal_only
+            )
+
+        if not terminal_only:
+            if serialize:
+                dir_list = [self] + dir_list
+            else:
+                dir_list = [self, dir_list]
+
+        if serialize or not terminal_only:
+            return dir_list
+        elif terminal_only:
+            return [dir_list]
 
     def get_abspath(self) -> str:
         """get absolute path which is sep by '/'"""

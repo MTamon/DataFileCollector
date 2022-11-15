@@ -342,4 +342,9 @@ class Directory:
             if condition(file, self.terminal):
                 if not os.path.isfile(target_path) or override:
                     shutil.copyfile(file_path, target_path)
-                printer(f"copy: {file_path} -> {target_path}")
+                    if os.path.isfile(target_path) and override:
+                        printer(f"ovrd: {file_path} -> {target_path}")
+                    else:
+                        printer(f"copy: {file_path} -> {target_path}")
+                else:
+                    printer(f"exst: {file_path} -> {target_path}")

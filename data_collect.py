@@ -1,7 +1,6 @@
 """Database file path collector"""
 
 import os
-from typing import List
 
 from material.directory import Condition, Directory
 

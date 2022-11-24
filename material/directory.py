@@ -206,7 +206,9 @@ class Directory:
 
         return self
 
-    def get_file_path(self, condition: Condition, serialize: bool = False) -> list:
+    def get_file_path(
+        self, conditions: List[Condition], serialize: bool = False
+    ) -> list:
         """Get the path to the file matching the condition.
 
         Args:
@@ -216,16 +218,19 @@ class Directory:
         """
         file_list = []
 
+        if isinstance(conditions, Condition):
+            conditions = [conditions]
+
         for file in self.file_member:
-            if condition(file, self.terminal):
+            if sum([condition(file, self.terminal) for condition in conditions]) != 0:
                 out_form_path = "/".join(file.split(os.sep))
                 file_list.append(out_form_path)
 
         for dirc in self.dirc_member:
             if serialize:
-                file_list += dirc.get_file_path(condition, serialize=serialize)
+                file_list += dirc.get_file_path(conditions, serialize=serialize)
             else:
-                file_list.append(dirc.get_file_path(condition, serialize=serialize))
+                file_list.append(dirc.get_file_path(conditions, serialize=serialize))
 
         return file_list
 
@@ -238,18 +243,6 @@ class Directory:
             serialize (bool): Specifies how the directory list is returned.
         """
         return self.get_all_instances(serialize=serialize, terminal_only=True)
-        # dir_list = []
-
-        # if self.terminal:
-        #     return [self]
-
-        # for dirc in self.dirc_member:
-        #     dir_list += dirc.get_terminal_instances(serialize=serialize)
-
-        # if serialize:
-        #     return dir_list
-        # else:
-        #     return [dir_list]
 
     def get_all_instances(
         self, serialize: bool = False, terminal_only: bool = False
@@ -282,23 +275,26 @@ class Directory:
         """get absolute path which is sep by '/'"""
         return "/".join(self.abspath.split(os.sep))
 
-    def clone(self, condition: Condition = None) -> Directory:
+    def clone(self, conditions: List[Condition] = None) -> Directory:
         """copy Directory structure (option: with condition)"""
 
         clone = Directory(self.path, self.empty)
 
+        if isinstance(conditions, Condition):
+            conditions = [conditions]
+
         clone.file_member = self.file_member.copy()
         clone.dirc_member = [
-            directory.clone(condition) for directory in self.dirc_member
+            directory.clone(conditions) for directory in self.dirc_member
         ]
         clone.terminal = self.terminal
 
-        if condition is None:
+        if conditions is None:
             return clone
 
         new_list = []
         for file in clone.file_member:
-            if condition(file, clone.terminal):
+            if sum([condition(file, clone.terminal) for condition in conditions]) != 0:
                 new_list.append(file)
         clone.file_member = new_list
 
@@ -307,7 +303,7 @@ class Directory:
     def incarnate(
         self,
         path: str,
-        condition: Condition = None,
+        conditions: List[Condition] = None,
         printer: Callable[[str], Any] = None,
     ) -> int:
         """
@@ -322,17 +318,20 @@ class Directory:
 
         path = os.sep.join(path.split("/"))
 
+        if isinstance(conditions, Condition):
+            conditions = [conditions]
+
         mk_number = 0
 
         mk_path = os.path.join(path, self.name)
         if not os.path.isdir(mk_path):
             os.mkdir(mk_path)
             mk_number += 1
-        if condition is not None:
-            self.copy_file(mk_path, condition, printer)
+        if conditions is not None:
+            self.copy_file(mk_path, conditions, printer)
 
         for dirc in self.dirc_member:
-            mk_number += dirc.incarnate(mk_path, condition, printer)
+            mk_number += dirc.incarnate(mk_path, conditions, printer)
 
         return mk_number
 
@@ -388,7 +387,7 @@ class Directory:
     def copy_file(
         self,
         path: str,
-        condition: Condition = None,
+        conditions: List[Condition] = None,
         printer: Callable[[str], Any] = None,
         override: bool = False,
     ):
@@ -396,12 +395,15 @@ class Directory:
 
         path = os.sep.join(path.split("/"))
 
+        if isinstance(conditions, Condition):
+            conditions = [conditions]
+
         for file in self.file_member:
             file_path = "/".join(file.split(os.sep))
             file_name = os.path.basename(file_path)
             target_path = "/".join([path, file_name])
 
-            if condition(file, self.terminal):
+            if sum([condition(file, self.terminal) for condition in conditions]) != 0:
                 if not os.path.isfile(target_path) or override:
                     shutil.copyfile(file_path, target_path)
                     if os.path.isfile(target_path) and override:

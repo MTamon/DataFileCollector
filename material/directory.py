@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import re
 import shutil
 from typing import Any, Callable, List
 
@@ -198,6 +199,28 @@ class Directory:
 
     def __str__(self) -> str:
         return self.path
+
+    def __eq__(self, __o: str) -> bool:
+        if not isinstance(__o, str):
+            raise NotImplementedError()
+        else:
+            return __o == self.name
+
+    def __call__(self, path: str) -> Directory:
+        path_route = re.split(r"[\\|/]", path)
+
+        if len(path_route) == 1:
+            if path_route[0] in self.file_member:
+                return self
+            for dirc in self.dirc_member:
+                if path_route[0] == dirc:
+                    return dirc
+            return None
+        else:
+            for dirc in self.dirc_member:
+                if path_route[0] == dirc:
+                    return dirc("/".join(path_route[1:]))
+            return None
 
     def build_structure(self):
         """Generate & build directory structure"""

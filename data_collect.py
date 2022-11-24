@@ -88,8 +88,8 @@ class Collector:
 if __name__ == "__main__":
     # example1
     cond = Condition()
-    cond.specify_extention("py")
-    cond.specify_extention("hp")
+    cond.specify_extention(["py"])
+    cond.specify_extention(["hp"])
 
     collector = Collector(cond, "./")
     results = collector.get_path()

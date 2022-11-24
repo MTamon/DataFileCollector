@@ -26,9 +26,12 @@ class Condition:
 
         if self.contain_dirc != []:
             dircs = os.path.dirname(file_path).split(os.sep)
+            exist = False
             for target_dirc in self.contain_dirc:
-                if not target_dirc in dircs:
-                    return False
+                if target_dirc in dircs:
+                    exist = True
+                    break
+            return exist
 
         if self.exclude_dirc != []:
             dircs = os.path.dirname(file_path).split(os.sep)
@@ -37,14 +40,17 @@ class Condition:
                     return False
 
         if self.extention != []:
-            ext = file_path.split(".")[-1]
+            ext = os.path.basename(file_path).split(".")[-1]
             if not ext in self.extention:
                 return False
 
         if self.contain_literal != []:
+            exist = False
             for literal in self.contain_literal:
-                if not literal in os.path.basename(file_path):
-                    return False
+                if literal in os.path.basename(file_path):
+                    exist = True
+                    break
+            return exist
 
         if self.exclude_literal != []:
             for literal in self.exclude_literal:

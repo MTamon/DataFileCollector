@@ -181,7 +181,7 @@ class Directory:
                 "'path' must not be empty. If you wont to set current directory, set './'."
             )
 
-        path = os.sep.join(path.split("/"))
+        path = os.sep.join(re.split(r"[\\|/]", path))
         name = path.split(os.sep)[-1]
         if path == f".{os.sep}":
             name = os.path.abspath(path).split(os.sep)[-1]
@@ -207,9 +207,14 @@ class Directory:
             return __o == self.name
 
     def __call__(self, path: str) -> Directory:
+        """Search the members of the hierarchy below this instance itself"""
         path_route = re.split(r"[\\|/]", path)
+        if path_route[0] == ".":
+            path_route = path_route[1:]
 
         if len(path_route) == 1:
+            if path_route[0] == "":
+                return self
             if path_route[0] in self.file_member:
                 return self
             for dirc in self.dirc_member:

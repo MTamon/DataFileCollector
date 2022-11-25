@@ -32,7 +32,8 @@ class Condition:
                 if target_dirc in dircs:
                     exist = True
                     break
-            return exist
+            if not exist:
+                return False
 
         if self.exclude_dirc != []:
             dircs = os.path.dirname(file_path).split(os.sep)
@@ -51,7 +52,8 @@ class Condition:
                 if literal in os.path.basename(file_path):
                     exist = True
                     break
-            return exist
+            if not exist:
+                return False
 
         if self.exclude_literal != []:
             for literal in self.exclude_literal:

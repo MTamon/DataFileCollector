@@ -1,6 +1,7 @@
 """Database file path collector"""
 
 import os
+from typing import List
 
 from material.directory import Condition, Directory
 
@@ -8,12 +9,17 @@ from material.directory import Condition, Directory
 class Collector:
     """Database file path collector"""
 
-    def __init__(self, condition: Condition, root_path: str, abspath: bool = False):
+    def __init__(
+        self, conditions: List[Condition], root_path: str, abspath: bool = False
+    ):
+        if isinstance(conditions, Condition):
+            conditions = [conditions]
+
         if abspath:
             root_path = os.path.abspath(root_path)
 
         self.database = Directory(root_path).build_structure()
-        self.condition = condition
+        self.condition = conditions
 
     def get_path(self, serialize: bool = False) -> list:
         """

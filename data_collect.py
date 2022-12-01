@@ -12,7 +12,7 @@ class Collector:
     def __init__(
         self, conditions: List[Condition], root_path: str, abspath: bool = False
     ):
-        if isinstance(conditions, Condition):
+        if not isinstance(conditions, list):
             conditions = [conditions]
 
         if abspath:

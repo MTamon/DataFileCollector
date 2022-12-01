@@ -248,7 +248,7 @@ class Directory:
         """
         file_list = []
 
-        if isinstance(conditions, Condition):
+        if not isinstance(conditions, list):
             conditions = [conditions]
 
         for file in self.file_member:
@@ -310,7 +310,7 @@ class Directory:
 
         clone = Directory(self.path, self.empty)
 
-        if isinstance(conditions, Condition):
+        if not isinstance(conditions, list):
             conditions = [conditions]
 
         clone.file_member = self.file_member.copy()
@@ -348,7 +348,7 @@ class Directory:
 
         path = os.sep.join(path.split("/"))
 
-        if isinstance(conditions, Condition):
+        if not isinstance(conditions, list):
             conditions = [conditions]
 
         mk_number = 0
@@ -425,7 +425,7 @@ class Directory:
 
         path = os.sep.join(path.split("/"))
 
-        if isinstance(conditions, Condition):
+        if not isinstance(conditions, list):
             conditions = [conditions]
 
         for file in self.file_member:

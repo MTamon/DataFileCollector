@@ -21,6 +21,8 @@ class Condition:
         self.condition_func = []
 
     def __call__(self, file_path: str, terminal: bool) -> bool:
+        file_path = os.sep.join(re.split(r"[\\/]", file_path))
+
         if self.only_terminal_file:
             if not terminal:
                 return False

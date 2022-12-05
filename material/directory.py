@@ -20,12 +20,15 @@ class Condition:
         self.extention = []
         self.condition_func = []
 
-    def __call__(self, file_path: str, terminal: bool) -> bool:
+    def __call__(self, file_path: str) -> bool:
         file_path = os.sep.join(re.split(r"[\\/]", file_path))
 
         if self.only_terminal_file:
-            if not terminal:
-                return False
+            dirs_path = os.path.dirname(file_path)
+            mems = os.listdir(dirs_path)
+            for mem in mems:
+                if os.path.isdir(os.path.join(dirs_path, mem)):
+                    return False
 
         if self.contain_dirc != []:
             dircs = os.path.dirname(file_path).split(os.sep)
@@ -254,7 +257,7 @@ class Directory:
             conditions = [conditions]
 
         for file in self.file_member:
-            if sum([condition(file, self.terminal) for condition in conditions]) != 0:
+            if sum([condition(file) for condition in conditions]) != 0:
                 out_form_path = "/".join(file.split(os.sep))
                 file_list.append(out_form_path)
 
@@ -326,7 +329,7 @@ class Directory:
 
         new_list = []
         for file in clone.file_member:
-            if sum([condition(file, clone.terminal) for condition in conditions]) != 0:
+            if sum([condition(file) for condition in conditions]) != 0:
                 new_list.append(file)
         clone.file_member = new_list
 
@@ -356,9 +359,8 @@ class Directory:
         mk_number = 0
 
         mk_path = os.path.join(path, self.name)
-        for condition in conditions:
-            if not condition(mk_path, True):
-                return 0
+        if sum([condition(mk_path) for condition in conditions]) != 0:
+            return 0
         if not os.path.isdir(mk_path):
             os.mkdir(mk_path)
             mk_number += 1
@@ -438,7 +440,7 @@ class Directory:
             file_name = os.path.basename(file_path)
             target_path = "/".join([path, file_name])
 
-            if sum([condition(file, self.terminal) for condition in conditions]) != 0:
+            if sum([condition(file) for condition in conditions]) != 0:
                 if not os.path.isfile(target_path) or override:
                     shutil.copyfile(file_path, target_path)
                     if os.path.isfile(target_path) and override:

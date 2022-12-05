@@ -356,6 +356,9 @@ class Directory:
         mk_number = 0
 
         mk_path = os.path.join(path, self.name)
+        for condition in conditions:
+            if not condition(mk_path, True):
+                return 0
         if not os.path.isdir(mk_path):
             os.mkdir(mk_path)
             mk_number += 1

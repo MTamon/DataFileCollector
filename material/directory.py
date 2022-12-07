@@ -269,6 +269,33 @@ class Directory:
 
         return file_list
 
+    def get_grouped_path_list(self, key: Callable[[str], str]) -> List[List[str]]:
+        """Get grouped file path list with 'key'.
+
+        Args:
+            key (str): keyword for groping.
+
+        Returns:
+            List[List[str]]: grouped path list.
+        """
+
+        grouped = {}
+
+        for mem in self.file_member:
+            name = os.path.basename(mem)
+
+            group = key(name)
+            if group in grouped.keys():
+                grouped[group] = [mem]
+            else:
+                grouped[group].append(mem)
+
+        _result = []
+        for group in grouped:
+            _result.append(grouped[group])
+
+        return _result
+
     def get_terminal_instances(self, serialize: bool = False) -> list:
         """Get the terminal Directory instance list while preserving file structure
         or Get the terminal Directory instance serialized list.

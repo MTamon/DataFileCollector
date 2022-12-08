@@ -296,7 +296,7 @@ class Directory:
 
         return _result
 
-    def get_terminal_instances(self, serialize: bool = False) -> list:
+    def get_terminal_instances(self, serialize: bool = False) -> List[Directory]:
         """Get the terminal Directory instance list while preserving file structure
         or Get the terminal Directory instance serialized list.
 

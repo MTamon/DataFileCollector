@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 import re
 import shutil
-from typing import Any, Callable, List
+from typing import Any, Callable, List, Iterable
 
 
 class Condition:
@@ -253,7 +253,9 @@ class Directory:
         """
         file_list = []
 
-        if not isinstance(conditions, list):
+        if isinstance(conditions, dict):
+            conditions = [conditions[k] for k in conditions]
+        if not isinstance(conditions, Iterable):
             conditions = [conditions]
 
         for file in self.file_member:
@@ -342,7 +344,9 @@ class Directory:
 
         clone = Directory(self.path, self.empty)
 
-        if not isinstance(conditions, list):
+        if isinstance(conditions, dict):
+            conditions = [conditions[k] for k in conditions]
+        if not isinstance(conditions, Iterable):
             conditions = [conditions]
 
         clone.file_member = self.file_member.copy()
@@ -380,7 +384,9 @@ class Directory:
 
         path = os.sep.join(path.split("/"))
 
-        if not isinstance(conditions, list):
+        if isinstance(conditions, dict):
+            conditions = [conditions[k] for k in conditions]
+        if not isinstance(conditions, Iterable):
             conditions = [conditions]
 
         mk_number = 0
@@ -459,7 +465,9 @@ class Directory:
 
         path = os.sep.join(path.split("/"))
 
-        if not isinstance(conditions, list):
+        if isinstance(conditions, dict):
+            conditions = [conditions[k] for k in conditions]
+        if not isinstance(conditions, Iterable):
             conditions = [conditions]
 
         for file in self.file_member:

@@ -287,14 +287,14 @@ class Directory:
             name = os.path.basename(mem)
 
             group = key(name)
-            if group in grouped.keys():
+            if not group in grouped:
                 grouped[group] = [mem]
             else:
                 grouped[group].append(mem)
 
         _result = []
-        for group in grouped:
-            _result.append(grouped[group])
+        for _, path_list in grouped.items():
+            _result.append(path_list)
 
         return _result
 

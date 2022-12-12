@@ -95,7 +95,7 @@ if __name__ == "__main__":
     # example1
     cond = Condition()
     cond.specify_extention(["py"])
-    cond.specify_extention(["hp"])
+    cond.specify_extention(["txt"])
 
     collector = Collector(cond, "./")
     results = collector.get_path()
@@ -127,7 +127,7 @@ if __name__ == "__main__":
     print(collector)
 
     os.mkdir("./out/exp1/ABCD")
-    f = open("./out/exp1/ABCD/exit.py", "w")
+    f = open("./out/exp1/ABCD/exit.py", "w", encoding="utf-8")
     f.close()
 
     cloned = structures.clone()

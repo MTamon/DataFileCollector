@@ -6,7 +6,7 @@ The basic usage is as follows.
 
 ```python
 cond = Condition()
-cond.specify_extention("py")
+cond.specify_extention("[py]")
 
 collector = Collector(cond, "./")
 results = collector.get_path()

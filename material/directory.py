@@ -355,7 +355,7 @@ class Directory:
         ]
         clone.terminal = self.terminal
 
-        if conditions is [None]:
+        if conditions == [None]:
             return clone
 
         new_list = []

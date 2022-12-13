@@ -30,7 +30,7 @@ class Condition:
                 if os.path.isdir(os.path.join(dirs_path, mem)):
                     return False
 
-        if self.contain_dirc != []:
+        if self.contain_dirc :
             dircs = os.path.dirname(file_path).split(os.sep)
             exist = False
             for target_dirc in self.contain_dirc:
@@ -40,18 +40,18 @@ class Condition:
             if not exist:
                 return False
 
-        if self.exclude_dirc != []:
+        if self.exclude_dirc :
             dircs = os.path.dirname(file_path).split(os.sep)
             for target_dirc in self.exclude_dirc:
                 if target_dirc in dircs:
                     return False
 
-        if self.extention != []:
+        if self.extention :
             ext = os.path.basename(file_path).split(".")[-1]
             if not ext in self.extention:
                 return False
 
-        if self.contain_literal != []:
+        if self.contain_literal :
             exist = False
             for literal in self.contain_literal:
                 if literal in os.path.basename(file_path):
@@ -60,12 +60,12 @@ class Condition:
             if not exist:
                 return False
 
-        if self.exclude_literal != []:
+        if self.exclude_literal :
             for literal in self.exclude_literal:
                 if literal in os.path.basename(file_path):
                     return False
 
-        if self.condition_func != []:
+        if self.condition_func :
             for condition in self.condition_func:
                 if not condition(file_path):
                     return False
@@ -178,7 +178,15 @@ class Condition:
 
         return self
 
+    def __str__(self) -> str:
 
+        cond_str = "Condition\n"
+        for key, value in vars(self).items():
+            if value : 
+                cond_str += ' - ' + key + ' : [' + ','.join(value) + ']\n'
+
+        return cond_str
+            
 class Directory:
     """This class is used to represent a directory in a database collector."""
 

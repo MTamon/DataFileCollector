@@ -178,7 +178,15 @@ class Condition:
 
         return self
 
-
+    def __str__(self) -> None:
+        print(f"Condition")
+        if self.contain_literal : print(f"contain_literal: {self.contain_literal}")
+        if self.exclude_literal : print(f"exclude_literal: {self.exclude_literal}")
+        if self.contain_dirc    : print(f"contain_dirc   : {self.contain_dirc}")
+        if self.contain_dirc    : print(f"exclude_dirc   : {self.exclude_dirc}")
+        if self.extention       : print(f"extention      : {self.extention}")
+        if self.condition_func  : print(f"condition_func : {self.condition_func}")
+            
 class Directory:
     """This class is used to represent a directory in a database collector."""
 

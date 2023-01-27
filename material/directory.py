@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 import re
 import shutil
-from typing import Any, Callable, List, Iterable
+from typing import Any, Callable, List, Iterable, Tuple
 
 
 class Condition:
@@ -416,7 +416,8 @@ class Directory:
         path: str,
         conditions: List[Condition] = None,
         printer: Callable[[str], Any] = print,
-    ) -> int:
+        get_incarnated: bool = False,
+    ) -> int | Directory:
         """
         Incarnating instance as an actual directory.
 
@@ -453,6 +454,9 @@ class Directory:
 
         for dirc in self.dirc_member:
             mk_number += dirc.incarnate(mk_path, conditions, printer)
+
+        if get_incarnated:
+            return Directory(self.path).build_structure()
 
         return mk_number
 

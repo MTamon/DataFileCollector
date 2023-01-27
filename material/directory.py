@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 import re
 import shutil
-from typing import Any, Callable, List, Iterable, Tuple
+from typing import Any, Callable, List, Iterable
 
 
 class Condition:
@@ -497,15 +497,28 @@ class Directory:
         if empty:
             self.file_member = []
 
-    def remove_member(self, conditions: List[Condition] = None) -> int:
+    def remove_member(
+        self,
+        conditions: List[Condition] = None,
+        printer: Callable[[str], Any] = print,
+    ) -> int:
         """Remove file members
 
         Args:
             conditions (List[Condition], optional): File remove conditons. Defaults to None.
+            printer (Callable[[str], Any], optional): Output stream.
+            When printer is None, output stream is stoped. Defaults to print.
 
         Returns:
             int: Removed file member num.
         """
+        if printer is None:
+
+            def no_wark(_):
+                pass
+
+            printer = no_wark
+
         remove_files = self.get_file_path(conditions=conditions, serialize=True)
         for file in remove_files:
             os.remove(file)

@@ -210,9 +210,9 @@ class Directory:
             )
 
         path = os.sep.join(re.split(r"[\\|/]", path))
-        name = path.split(os.sep)[-1]
+        name = path.rsplit(os.sep, maxsplit=1)[-1]
         if path == f".{os.sep}":
-            name = os.path.abspath(path).split(os.sep)[-1]
+            name = os.path.abspath(path).rsplit(os.sep, maxsplit=1)[-1]
             path = os.path.join("..", name)
 
         self.name = name
@@ -356,6 +356,30 @@ class Directory:
         elif terminal_only:
             return [dir_list]
 
+    def get_specify_instance(self, path: str) -> Directory | None:
+        """Get Directory instance which specified `path`.
+        When file path specified as path, return its owner directory instance.
+        Please exclude this directory's name from `path`.
+
+        Args:
+            path (str): Relative path from `self.path`
+
+        Returns:
+            Directory|None
+        """
+        if os.path.isfile(path):
+            path = os.path.dirname(path)
+        if path == "":
+            return self
+
+        dirc_list = re.split(r"[\\|/]", path)
+        for direc in self.dirc_member:
+            if direc == dirc_list[0]:
+                if len(dirc_list) == 1:
+                    return direc
+                return direc.get_specify_instance(os.sep.join(dirc_list[1:]))
+        return None
+
     def get_abspath(self) -> str:
         """get absolute path which is sep by '/'"""
         return "/".join(self.abspath.split(os.sep))
@@ -462,6 +486,20 @@ class Directory:
 
         if empty:
             self.file_member = []
+
+    def remove_member(self, conditions: List[Condition] = None) -> int:
+        """Remove file members
+
+        Args:
+            conditions (List[Condition], optional): File remove conditons. Defaults to None.
+
+        Returns:
+            int: Removed file member num.
+        """
+        remove_files = self.get_file_path(conditions=conditions, serialize=True)
+        for file in remove_files:
+            os.remove(file)
+        return len(remove_files)
 
     def destruct(self) -> None:
         """Destruct members"""

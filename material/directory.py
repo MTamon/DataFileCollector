@@ -499,6 +499,9 @@ class Directory:
         remove_files = self.get_file_path(conditions=conditions, serialize=True)
         for file in remove_files:
             os.remove(file)
+
+        self.update_member()
+
         return len(remove_files)
 
     def destruct(self) -> None:

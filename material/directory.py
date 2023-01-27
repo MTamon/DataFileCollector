@@ -18,6 +18,7 @@ class Condition:
         self.contain_dirc = []
         self.exclude_dirc = []
         self.extention = []
+        self.exclude_extention = []
         self.condition_func = []
 
     def __call__(self, file_path: str) -> bool:
@@ -30,7 +31,7 @@ class Condition:
                 if os.path.isdir(os.path.join(dirs_path, mem)):
                     return False
 
-        if self.contain_dirc :
+        if self.contain_dirc:
             dircs = os.path.dirname(file_path).split(os.sep)
             exist = False
             for target_dirc in self.contain_dirc:
@@ -40,18 +41,23 @@ class Condition:
             if not exist:
                 return False
 
-        if self.exclude_dirc :
+        if self.exclude_dirc:
             dircs = os.path.dirname(file_path).split(os.sep)
             for target_dirc in self.exclude_dirc:
                 if target_dirc in dircs:
                     return False
 
-        if self.extention :
-            ext = os.path.basename(file_path).split(".")[-1]
+        if self.extention:
+            ext = os.path.splitext(file_path)[-1][1:]
             if not ext in self.extention:
                 return False
 
-        if self.contain_literal :
+        if self.exclude_extention:
+            ext = os.path.splitext(file_path)[-1][1:]
+            if ext in self.exclude_extention:
+                return False
+
+        if self.contain_literal:
             exist = False
             for literal in self.contain_literal:
                 if literal in os.path.basename(file_path):
@@ -60,12 +66,12 @@ class Condition:
             if not exist:
                 return False
 
-        if self.exclude_literal :
+        if self.exclude_literal:
             for literal in self.exclude_literal:
                 if literal in os.path.basename(file_path):
                     return False
 
-        if self.condition_func :
+        if self.condition_func:
             for condition in self.condition_func:
                 if not condition(file_path):
                     return False
@@ -152,6 +158,12 @@ class Condition:
 
         return self
 
+    def specify_exclude_extention(self, extention: List[str]) -> Condition:
+        """Exclude the file extension."""
+        self.exclude_extention += extention
+
+        return self
+
     def remove_extentions(self, extentions: List[str]) -> Condition:
         """remove extentions in registered extentions"""
         new_list = []
@@ -182,11 +194,12 @@ class Condition:
 
         cond_str = "Condition\n"
         for key, value in vars(self).items():
-            if value : 
-                cond_str += ' - ' + key + ' : [' + ','.join(value) + ']\n'
+            if value:
+                cond_str += " - " + key + " : [" + ",".join(value) + "]\n"
 
         return cond_str
-            
+
+
 class Directory:
     """This class is used to represent a directory in a database collector."""
 

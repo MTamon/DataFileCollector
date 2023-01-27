@@ -415,7 +415,7 @@ class Directory:
         self,
         path: str,
         conditions: List[Condition] = None,
-        printer: Callable[[str], Any] = None,
+        printer: Callable[[str], Any] = print,
     ) -> int:
         """
         Incarnating instance as an actual directory.
@@ -426,6 +426,12 @@ class Directory:
         -------
         (int): number of made directory
         """
+        if printer is None:
+
+            def no_wark(_):
+                pass
+
+            printer = no_wark
 
         path = os.sep.join(path.split("/"))
 
@@ -520,10 +526,16 @@ class Directory:
         self,
         path: str,
         conditions: List[Condition] = None,
-        printer: Callable[[str], Any] = None,
+        printer: Callable[[str], Any] = print,
         override: bool = False,
     ):
         """copy member files to path (option: with conditon)"""
+        if printer is None:
+
+            def no_wark(_):
+                pass
+
+            printer = no_wark
 
         path = os.sep.join(path.split("/"))
 
